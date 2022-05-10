@@ -1,0 +1,77 @@
+from pytorch_lightning import LightningDataModule
+from torch.utils.data import random_split, DataLoader, Dataset
+import torch
+from torchvision.datasets import MNIST, FashionMNIST
+from torchvision import transforms
+import torchvision
+import numpy as np
+from scipy.stats import ortho_group
+
+
+class MNISTDataModule(LightningDataModule):
+    def __init__(self, batch_size):
+        super().__init__()
+        self.batch_size = batch_size
+
+    def train_dataloader(self):
+        transform = transforms.Compose([
+            torchvision.transforms.Resize(32),
+            transforms.ToTensor(),
+        ])
+        dataset = MNIST('./data', train=True, download=True, transform=transform)
+        loader = DataLoader(dataset, batch_size=self.batch_size, num_workers=2, pin_memory=True, persistent_workers=True)
+        return loader
+    
+class FMNISTDataModule(LightningDataModule):
+    def __init__(self, batch_size):
+        super().__init__()
+        self.batch_size = batch_size
+
+    def train_dataloader(self):
+        transform = transforms.Compose([
+            torchvision.transforms.Resize(32),
+            transforms.ToTensor(),
+        ])
+        dataset = FashionMNIST('./data', train=True, download=True, transform=transform)
+        loader = DataLoader(dataset, batch_size=self.batch_size, num_workers=2, pin_memory=True, persistent_workers=True)
+        return loader
+    
+class GaussianDataset(Dataset):
+    
+    def __init__(self, n_samples, m=1024, r=0.025, transform=None, conv=False):
+        # m = 20
+        # r = 0.25
+        # sigmas = 2*np.exp(-r*np.arange(m))
+        # m = 1024
+        # r = 0.025
+        sigmas = 2*np.exp(-r*np.arange(m))
+        self.transform = transform
+        # self.X = sigma*torch.randn((n_samples, dimension[0], dimension[1])) + mu
+        np.random.seed(seed=233423)
+        U = ortho_group.rvs(m)
+        # U = np.dot(u, u.T)
+        # cov_mat = np.diag(sigmas**2)
+        cov_mat = U @ np.diag(sigmas**2) @ U.T
+        self.X = np.random.multivariate_normal(np.zeros(sigmas.shape[0]), cov_mat, n_samples)
+        self.X = torch.tensor(self.X).float()
+        # if conv is False:
+        #     self.X = torch.flatten(self.X, start_dim=2, end_dim=3).squeeze(1)
+
+    def __len__(self):
+        return len(self.X)
+
+    def __getitem__(self, idx):
+        return self.X[idx], torch.tensor(0)
+
+class GaussianDataModule(LightningDataModule):
+    def __init__(self, batch_size, m):
+        super().__init__()
+        self.batch_size = batch_size
+        self.m = m
+        
+    def train_dataloader(self):
+        trainset = GaussianDataset(n_samples=50000, m=self.m, r=0.25)
+        train_loader = torch.utils.data.DataLoader(trainset, batch_size=self.batch_size,
+                                              shuffle=True, num_workers=2, pin_memory=True)
+        return train_loader
+
