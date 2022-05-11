@@ -8,6 +8,7 @@ Lei, Eric, Hamed Hassani, and Shirin Saeedi Bidokhti. "[Neural Estimation of the
 Lei, Eric, Hamed Hassani, and Shirin Saeedi Bidokhti. "Neural Estimation of the Rate-Distortion Function For Massive Datasets," in 2022 IEEE International Symposium on Information Theory (ISIT), June 2022.
 
 # To Run
+First, make sure you have folders named `trained/` and `data/` in the root directory. To estimate $$R(D)$$ at a series of distortion values, run `python NERD_curve.py --gpus 0 --Ds 10 20 30 40 50 --data_name "MNIST"`. This will evaluate $$R(D)$$ for $$D \in \{10,20,30,40,50\}$$, using GPU 0 on MNIST. 
 
 # Citation
 
