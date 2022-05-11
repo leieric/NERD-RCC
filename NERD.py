@@ -39,6 +39,7 @@ class GenRD(LightningModule):
                  batch_size: int = 64, 
                  D: float=40,
                  data_name="MNIST",
+                 generator=models.Generator(img_size=(32,32,1), latent_dim=100, dim=64),
                  **kwargs):
         super().__init__()
         self.save_hyperparameters()
@@ -52,7 +53,7 @@ class GenRD(LightningModule):
 #         self.lmbda_dual = nn.Parameter(torch.tensor(init_lmbda)) #torch.ones(1, requires_grad=True)
 
         # networks
-        # self.generator = models.Generator(img_size=(32,32,1), latent_dim=self.latent_dim, dim=64)
+        self.generator = generator
 
         self.validation_z = torch.randn(8, self.latent_dim)
 
@@ -145,16 +146,6 @@ class GenRD(LightningModule):
         opt_g = torch.optim.Adam(self.generator.parameters(), lr=self.lr, betas=(b1, b2))
         return opt_g
 
-    def train_dataloader(self):
-        transform = transforms.Compose([
-            torchvision.transforms.Resize(32),
-            transforms.ToTensor(),
-#             transforms.Normalize([0.5], [0.5]),
-        ])
-        dataset = MNIST(os.getcwd(), train=True, download=True, transform=transform)
-        loader = DataLoader(dataset, batch_size=self.batch_size, num_workers=2, pin_memory=True, persistent_workers=True)
-        self.len_dataloader = len(loader)
-        return loader
 
     def on_epoch_end(self):
         z = self.validation_z.to(self.device)
@@ -179,7 +170,7 @@ class GenRD(LightningModule):
 #             plt.savefig(f'trained/{self.figdir}/training_loss')
 
 
-def train_save(args, D) -> None:
+def train_save(args, D, generator, datamodule) -> None:
     # ------------------------
     # 1 INIT LIGHTNING MODEL
     # ------------------------
@@ -189,22 +180,14 @@ def train_save(args, D) -> None:
                  lr=args.lr,
                  batch_size=args.batch_size,
                  D=D,
-                 data_name=args.data_name)
+                 data_name=args.data_name,
+                 generator=generator)
     
     trainer = Trainer(gpus=args.gpus[0], 
                       max_epochs=args.epochs
                      )
-    if args.data_name == "MNIST":
-        dm = dataloaders.MNISTDataModule(args.batch_size)
-        model.generator = models.Generator(img_size=(32,32,1), latent_dim=args.latent_dim, dim=64)
-    elif args.data_name == "FMNIST":
-        dm = dataloaders.FMNISTDataModule(args.batch_size)
-        model.generator = models.Generator(img_size=(32,32,1), latent_dim=args.latent_dim, dim=64)
-    elif args.data_name == "Gaussian":
-        m = 20
-        dm = dataloaders.GaussianDataModule(args.batch_size, m)
-        model.generator = models.Decoder_FC(m, args.latent_dim)
-    trainer.fit(model, dm)
+    
+    trainer.fit(model, datamodule)
     
     torch.save(model.state_dict(), f"trained/trained_{model.fname}/NERD_{model.fname}_D{D:.3f}.pt")
 

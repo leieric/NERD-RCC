@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import bisection
 from joblib import Parallel, delayed
 import scipy.spatial
 import scipy.special
@@ -20,11 +19,11 @@ def rev_wf(sigmas, D):
     if D > sum(sigmas**2):
         return max(sigmas**2)
     f_obj = lambda lam : lam_obj(lam, sigmas, D)
-    lam_opt = bisection.bisection(f_obj, 0, D, tol=1e-10)
+    lam_opt = scipy.optimize.bisect(f_obj, 0, D)
     return lam_opt
 
 def rd_gaussian(D, sigmas):
-    # gaussian rd functions
+    # gaussian R(D) with covariance singular values in sigmas
     lam_opt = rev_wf(sigmas, D)
     ind_over = sigmas**2 > lam_opt
     return np.sum(0.5*np.log2(sigmas[ind_over]**2 / lam_opt))

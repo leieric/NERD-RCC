@@ -1,10 +1,12 @@
 import NERD
+import models
+import dataloaders
 import os
 from argparse import ArgumentParser, Namespace
 
-def RD_sweep(args):
+def RD_sweep(args, generator, datamodule):
     for D in args.Ds[0]:
-        NERD.train_save(args, D)
+        NERD.train_save(args, D, generator, datamodule)
     
 
 
@@ -31,6 +33,17 @@ if __name__ == '__main__':
         os.mkdir(f'trained/figures_{args.data_name}')
     if not os.path.exists(f'trained/trained_{args.data_name}'):
         os.mkdir(f'trained/trained_{args.data_name}')
+        
+    if args.data_name == "MNIST":
+        dm = dataloaders.MNISTDataModule(args.batch_size)
+        generator = models.Generator(img_size=(32,32,1), latent_dim=args.latent_dim, dim=64)
+    elif args.data_name == "FMNIST":
+        dm = dataloaders.FMNISTDataModule(args.batch_size)
+        generator = models.Generator(img_size=(32,32,1), latent_dim=args.latent_dim, dim=64)
+    elif args.data_name == "Gaussian":
+        m = 20
+        dm = dataloaders.GaussianDataModule(args.batch_size, m)
+        generator = models.Decoder_FC(m, args.latent_dim)
     
 
-    RD_sweep(args)
+    RD_sweep(args, generator, dm)

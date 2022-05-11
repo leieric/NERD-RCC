@@ -12,6 +12,7 @@ class MNISTDataModule(LightningDataModule):
     def __init__(self, batch_size):
         super().__init__()
         self.batch_size = batch_size
+        # self.train=train
 
     def train_dataloader(self):
         transform = transforms.Compose([
@@ -19,6 +20,15 @@ class MNISTDataModule(LightningDataModule):
             transforms.ToTensor(),
         ])
         dataset = MNIST('./data', train=True, download=True, transform=transform)
+        loader = DataLoader(dataset, batch_size=self.batch_size, num_workers=2, pin_memory=True, persistent_workers=True, shuffle=True)
+        return loader
+    
+    def test_dataloader(self):
+        transform = transforms.Compose([
+            torchvision.transforms.Resize(32),
+            transforms.ToTensor(),
+        ])
+        dataset = MNIST('./data', train=False, download=True, transform=transform)
         loader = DataLoader(dataset, batch_size=self.batch_size, num_workers=2, pin_memory=True, persistent_workers=True)
         return loader
     
@@ -33,7 +43,7 @@ class FMNISTDataModule(LightningDataModule):
             transforms.ToTensor(),
         ])
         dataset = FashionMNIST('./data', train=True, download=True, transform=transform)
-        loader = DataLoader(dataset, batch_size=self.batch_size, num_workers=2, pin_memory=True, persistent_workers=True)
+        loader = DataLoader(dataset, batch_size=self.batch_size, num_workers=2, pin_memory=True, persistent_workers=True, shuffle=True)
         return loader
     
 class GaussianDataset(Dataset):
@@ -64,13 +74,14 @@ class GaussianDataset(Dataset):
         return self.X[idx], torch.tensor(0)
 
 class GaussianDataModule(LightningDataModule):
-    def __init__(self, batch_size, m):
+    def __init__(self, batch_size, m, r):
         super().__init__()
         self.batch_size = batch_size
         self.m = m
+        self.r = r
         
     def train_dataloader(self):
-        trainset = GaussianDataset(n_samples=50000, m=self.m, r=0.25)
+        trainset = GaussianDataset(n_samples=50000, m=self.m, r=self.r)
         train_loader = torch.utils.data.DataLoader(trainset, batch_size=self.batch_size,
                                               shuffle=True, num_workers=2, pin_memory=True)
         return train_loader
