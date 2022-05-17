@@ -42,7 +42,8 @@ if __name__ == '__main__':
         generator = models.Generator(img_size=(32,32,1), latent_dim=args.latent_dim, dim=64)
     elif args.data_name == "Gaussian":
         m = 20
-        dm = dataloaders.GaussianDataModule(args.batch_size, m)
+        r = 0.25
+        dm = dataloaders.GaussianDataModule(args.batch_size, m, r)
         generator = models.Decoder_FC(m, args.latent_dim)
     
 

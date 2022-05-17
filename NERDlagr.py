@@ -82,6 +82,7 @@ class GenRD(LightningModule):
     
 
     def training_step(self, batch, batch_idx):
+        self.eps = (0.99**self.current_epoch)*self.eps
         x, _ = batch
 
         # sample noise
@@ -91,12 +92,13 @@ class GenRD(LightningModule):
         y = self(z)
         dist_mat = self._squared_distances(x, y)
         c = 0
-        mean_z = torch.mean(torch.exp(self.lmbda_dual*dist_mat + c), dim=1)
-        log_f_xy = torch.log(dist_mat)+self.lmbda_dual*dist_mat + c -torch.log(mean_z[:,None] + self.eps)
+        # mean_z = torch.mean(torch.exp(self.lmbda_dual*dist_mat + c), dim=1)
+        log_mu_x = torch.logsumexp(self.lmbda_dual*dist_mat, dim=1) - np.log(dist_mat.shape[0])
+        g_loss = -torch.mean(log_mu_x) / np.log(2)
+        
+        log_f_xy = torch.log(dist_mat)+self.lmbda_dual*dist_mat + c - log_mu_x[:,None]
         distortion = torch.mean(torch.exp(log_f_xy))
-
-        term = torch.mean(torch.log(mean_z+self.eps))
-        g_loss = (self.lmbda_dual*distortion + c - term) / np.log(2)
+        rate = (self.lmbda_dual*distortion / np.log(2)) + g_loss
         
 
         
@@ -105,7 +107,7 @@ class GenRD(LightningModule):
         # denom_x = torch.mean(torch.exp(self.lmbda_dual*dist_mat), dim=1) + 1e-8
         # deriv = torch.mean(dist_mat*torch.exp(self.lmbda_dual*dist_mat) / denom_x[:,None])
 
-        tqdm_dict = {'rate': g_loss.item(), 'dual_var': self.lmbda_dual, 'distortion':distortion.item()}
+        tqdm_dict = {'rate': rate.item(), 'dual_var': self.lmbda_dual, 'distortion':distortion.item()}
         # self.epoch_loss += g_loss.item()
         self.log_dict(tqdm_dict, prog_bar=True)
         return g_loss
