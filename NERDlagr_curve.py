@@ -25,7 +25,7 @@ if __name__ == '__main__':
     parser.add_argument("--epochs", type=int, default=100,
                         help="Number of training epochs")
     parser.add_argument("--data_name", type=str, default="MNIST", help="dataset name")
-    
+    parser.add_argument("--init_gan", type=int, default=0, help="init with trained GAN")
 
     args = parser.parse_args()
     
@@ -36,10 +36,13 @@ if __name__ == '__main__':
         
     if args.data_name == "MNIST":
         dm = dataloaders.MNISTDataModule(args.batch_size)
-        generator = models.Generator(img_size=(32,32,1), latent_dim=args.latent_dim, dim=64)
+        args.dnn_size=64
+        # generator=None
+        generator = models.Generator(img_size=(32,32,1), latent_dim=args.latent_dim, dim=args.dnn_size)
     elif args.data_name == "FMNIST":
         dm = dataloaders.FMNISTDataModule(args.batch_size)
-        generator = models.Generator(img_size=(32,32,1), latent_dim=args.latent_dim, dim=64)
+        args.dnn_size=64
+        generator = models.Generator(img_size=(32,32,1), latent_dim=args.latent_dim, dim=args.dnn_size)
     elif args.data_name == "Gaussian":
         m = 20
         r = 0.25

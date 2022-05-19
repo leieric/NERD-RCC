@@ -19,7 +19,7 @@ transform = transforms.Compose([
             transforms.ToTensor(),
 #             transforms.Normalize([0.5], [0.5]),
         ])
-dataset = MNIST('.', train=True, download=True, transform=transform)
+dataset = FashionMNIST('.', train=True, download=True, transform=transform)
 n = 5000
 subset = torch.utils.data.Subset(dataset, list(range(n)))
 loader = DataLoader(subset, batch_size=n, shuffle=True)
@@ -145,7 +145,7 @@ def calc_RD(loader, model, D):
             Dist += D.item()
     return (Rate/np.log(2))/len(loader), Dist/len(loader), beta
 
-DD = [55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 2]
+DD = [70, 60, 50, 40, 30, 20, 17.5, 15, 12.5, 10, 5]
 # DD = [55, 50, 45, 40, 35, 30, 25]
 DD.reverse()
 rates_true_rd = []
@@ -162,7 +162,7 @@ dists_ORD = []
 
 for D in DD:
     model = GenRD(D=D)
-    checkpoint = torch.load(f'trained/trained_genRD_minmax/GenRD_trained_genRD_minmax_D{D:.3f}.pt')
+    checkpoint = torch.load(f'trained/trained_genRD_minmax_FMNIST/GenRD_trained_genRD_minmax_FMNIST_D{D:.3f}.pt')
     model.load_state_dict(checkpoint)
     model.to(device)
     r, d, beta = calc_RD(loader, model, D)

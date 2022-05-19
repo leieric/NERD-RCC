@@ -18,6 +18,7 @@ class MNISTDataModule(LightningDataModule):
         transform = transforms.Compose([
             torchvision.transforms.Resize(32),
             transforms.ToTensor(),
+            transforms.Normalize((0.5), (0.5))
         ])
         dataset = MNIST('./data', train=True, download=True, transform=transform)
         loader = DataLoader(dataset, batch_size=self.batch_size, num_workers=2, pin_memory=True, persistent_workers=True, shuffle=True)
@@ -27,6 +28,7 @@ class MNISTDataModule(LightningDataModule):
         transform = transforms.Compose([
             torchvision.transforms.Resize(32),
             transforms.ToTensor(),
+            transforms.Normalize((0.5), (0.5))
         ])
         dataset = MNIST('./data', train=False, download=True, transform=transform)
         loader = DataLoader(dataset, batch_size=self.batch_size, num_workers=2, pin_memory=True, persistent_workers=True)

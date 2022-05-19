@@ -39,7 +39,7 @@ class GenRD(LightningModule):
                  batch_size: int = 64, 
                  lmbda: float=-1,
                  data_name="MNIST",
-                 generator=models.Generator(img_size=(32,32,1), latent_dim=100, dim=64),
+                 generator=None,
                  **kwargs):
         super().__init__()
         self.save_hyperparameters()
@@ -130,6 +130,7 @@ class GenRD(LightningModule):
         # log sampled images
         sample_imgs = self(z)
         grid = torchvision.utils.make_grid(sample_imgs)
+        grid = 0.5*(grid + 1)
 #         self.logger.experiment.add_image('generated_images', grid, self.current_epoch)
         # self.train_losses.append(self.epoch_loss / self.len_dataloader)
         # self.epoch_loss = 0
@@ -153,12 +154,21 @@ def train_save(args, lmbda, generator, datamodule) -> None:
     # ------------------------
     # model = GenRD(**vars(args))
     # print(D)
+
+        
     model = GenRD(latent_dim=args.latent_dim,
                  lr=args.lr,
                  batch_size=args.batch_size,
                  lmbda=lmbda,
                  data_name=args.data_name,
                  generator=generator)
+    if args.init_gan==1:
+        # initialize with trained gan
+        ckpt = torch.load(f'trained_gan/wgan_gp_{args.data_name}.ckpt')
+        from wgan_gp import WGANGP
+        model_gan = WGANGP(latent_dim=128, dnn_size=32)
+        model_gan.load_state_dict(ckpt)
+        model.generator=model_gan.generator
     
     trainer = Trainer(gpus=args.gpus[0], 
                       max_epochs=args.epochs

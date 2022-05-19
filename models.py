@@ -28,7 +28,7 @@ class Generator(nn.Module):
             nn.ReLU(),
             nn.BatchNorm2d(dim, track_running_stats=track_running_stats),
             nn.ConvTranspose2d(dim, self.img_size[2], 4, 2, 1),
-            nn.Sigmoid()
+            nn.Tanh()
         )
 
     def forward(self, input_data):

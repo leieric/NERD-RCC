@@ -1,5 +1,6 @@
 /trained
 /trained_lagr
+/trained_gan
 /data
 /lightning_logs
 /.ipynb_checkpoints
