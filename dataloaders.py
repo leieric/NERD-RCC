@@ -1,7 +1,7 @@
 from pytorch_lightning import LightningDataModule
 from torch.utils.data import random_split, DataLoader, Dataset
 import torch
-from torchvision.datasets import MNIST, FashionMNIST
+from torchvision.datasets import MNIST, FashionMNIST, SVHN
 from torchvision import transforms
 import torchvision
 import numpy as np
@@ -18,7 +18,7 @@ class MNISTDataModule(LightningDataModule):
         transform = transforms.Compose([
             torchvision.transforms.Resize(32),
             transforms.ToTensor(),
-            transforms.Normalize((0.5), (0.5))
+            # transforms.Normalize((0.5), (0.5))
         ])
         dataset = MNIST('./data', train=True, download=True, transform=transform)
         loader = DataLoader(dataset, batch_size=self.batch_size, num_workers=2, pin_memory=True, persistent_workers=True, shuffle=True)
@@ -28,10 +28,32 @@ class MNISTDataModule(LightningDataModule):
         transform = transforms.Compose([
             torchvision.transforms.Resize(32),
             transforms.ToTensor(),
-            transforms.Normalize((0.5), (0.5))
+            # transforms.Normalize((0.5), (0.5))
         ])
         dataset = MNIST('./data', train=False, download=True, transform=transform)
         loader = DataLoader(dataset, batch_size=self.batch_size, num_workers=2, pin_memory=True, persistent_workers=True)
+        return loader
+
+class SVHNDataModule(LightningDataModule):
+    def __init__(self, batch_size):
+        super().__init__()
+        self.batch_size = batch_size
+        # self.train=train
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            # transforms.Normalize((0.5), (0.5))
+        ])
+        dset = SVHN(root='./data', download=True, transform=transform)
+        torch.manual_seed(0)
+        train_len = int(0.7*len(dset))
+        self.train_dset, self.test_dset = torch.utils.data.random_split(dset, [train_len, len(dset)-train_len])
+
+    def train_dataloader(self):
+        loader = DataLoader(self.train_dset, batch_size=self.batch_size, num_workers=2, pin_memory=True, persistent_workers=True, shuffle=True)
+        return loader
+    
+    def test_dataloader(self):
+        loader = DataLoader(self.test_dset, batch_size=self.batch_size, num_workers=2, pin_memory=True, persistent_workers=True)
         return loader
     
 class FMNISTDataModule(LightningDataModule):

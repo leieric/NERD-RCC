@@ -28,7 +28,7 @@ class Generator(nn.Module):
             nn.ReLU(),
             nn.BatchNorm2d(dim, track_running_stats=track_running_stats),
             nn.ConvTranspose2d(dim, self.img_size[2], 4, 2, 1),
-            nn.Tanh()
+            nn.Sigmoid()
         )
 
     def forward(self, input_data):
@@ -39,8 +39,6 @@ class Generator(nn.Module):
         # Return generated image
         return self.features_to_image(x)
 
-    def sample_latent(self, num_samples):
-        return torch.randn((num_samples, self.latent_dim))
 
 
 class Discriminator(nn.Module):
@@ -82,6 +80,7 @@ class Discriminator(nn.Module):
 class Decoder_FC(nn.Module):
     def __init__(self, x_dim, latent_dim):
         super(Decoder_FC, self).__init__()
+        self.latent_dim=latent_dim
         
         self.prob_to_features = nn.Sequential(
             nn.Linear(latent_dim, x_dim),

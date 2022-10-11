@@ -1,7 +1,14 @@
 /trained
-/trained_lagr
-/trained_gan
+trained_lagr/figures_Gaussian
+trained_lagr/figures_Gaussian2
+trained_lagr/figures_MNIST
+trained_lagr/figures_SVHN
+trained_lagr/trained_Gaussian_L1
+trained_lagr/trained_Gaussian_L2
+trained_lagr/trained_Gaussian_L3
 /data
+/plots
 /lightning_logs
 /.ipynb_checkpoints
 **/__pycache__
+plotRDcurves.ipynb
