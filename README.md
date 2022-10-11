@@ -9,7 +9,7 @@ Eric Lei, Hamed Hassani, and Shirin Saeedi Bidokhti. "[Neural Estimation of the 
 Eric Lei, Hamed Hassani, and Shirin Saeedi Bidokhti. "Neural Estimation of the Rate-Distortion Function For Massive Datasets," in 2022 IEEE International Symposium on Information Theory (ISIT), June 2022.
 
 # To Run
-Trained networks have been saved in the ``trained_lagr/'' folder. These can be used to plot RD curves in ``plotRDcurves_release.ipynb''. To train from scratch on image datasets, it is easier to pretrain a GAN on the dataset first, and use the GAN to initialize the $Q_Y$ generator neural network. Trained GANs have been uploaded to the ``trained_gan/'' folder for MNIST, FMNIST, and SVHN datasets. To run NERD with these pretrained GANs, simply run ``bash scripts/NERD_{dataset}.sh''. If you wish to pretrain a GAN yourself, we have the ``wgan_gp.py'' file which trains a Wasserstein GAN with gradient penalty. 
+Trained networks have been saved in the ``trained_lagr/`` folder. These can be used to plot RD curves in ``plotRDcurves_release.ipynb``. To train from scratch on image datasets, it is easier to pretrain a GAN on the dataset first, and use the GAN to initialize the $Q_Y$ generator neural network. Trained GANs have been uploaded to the ``trained_gan/`` folder for MNIST, FMNIST, and SVHN datasets. To run NERD with these pretrained GANs, simply run ``bash scripts/NERD_{dataset}.sh``. If you wish to pretrain a GAN yourself, we have the ``wgan_gp.py`` file which trains a Wasserstein GAN with gradient penalty. 
 
 # Citation
 
