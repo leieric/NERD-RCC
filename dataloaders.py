@@ -110,3 +110,26 @@ class GaussianDataModule(LightningDataModule):
                                               shuffle=True, num_workers=2, pin_memory=True)
         return train_loader
 
+class Sawbridge(LightningDataModule):
+    def __init__(self, batch_size, n=10000, n_sample=1024):
+        super().__init__()
+        self.n_sample = n_sample
+        self.batch_size = batch_size
+        t = torch.linspace(0, 1, n_sample)
+        torch.manual_seed(123)
+        U = torch.rand((n,1))
+        X = t - (t >= U).float()
+        X = X.unsqueeze(2).unsqueeze(2)
+        y = torch.zeros(X.shape[0])
+        dataset = torch.utils.data.TensorDataset(X, y)
+        len_keep = int(0.8*len(dataset))
+        self.train_dataset, self.test_dataset = torch.utils.data.random_split(dataset, [len_keep, len(dataset) - len_keep])
+
+    def train_dataloader(self):
+        loader = DataLoader(self.train_dataset, batch_size=self.batch_size, num_workers=2, pin_memory=True, persistent_workers=True, shuffle=True, drop_last=True)
+        return loader
+
+    def val_dataloader(self):
+        loader = DataLoader(self.test_dataset, batch_size=10000, num_workers=2, pin_memory=True, persistent_workers=True, drop_last=True)
+        return loader
+

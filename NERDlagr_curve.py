@@ -57,6 +57,9 @@ if __name__ == '__main__':
         r = 0.5
         dm = dataloaders.GaussianDataModule(args.batch_size, m, r)
         generator = models.Decoder_FC(m, args.latent_dim)
+    elif args.data_name == "Sawbridge":
+        dm = dataloaders.Sawbridge(args.batch_size, n=10000000, n_sample=1024)
+        generator = models.Decoder_FC(1024, 10)
     
 
     RD_sweep(args, generator, dm)

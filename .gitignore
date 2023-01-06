@@ -3,9 +3,11 @@ trained_lagr/figures_Gaussian
 trained_lagr/figures_Gaussian2
 trained_lagr/figures_MNIST
 trained_lagr/figures_SVHN
+trained_lagr/figures_Sawbridge
 trained_lagr/trained_Gaussian_L1
 trained_lagr/trained_Gaussian_L2
 trained_lagr/trained_Gaussian_L3
+trained_lagr/trained_Sawbridge
 /data
 /plots
 /lightning_logs

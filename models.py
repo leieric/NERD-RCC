@@ -86,7 +86,8 @@ class Decoder_FC(nn.Module):
             nn.Linear(latent_dim, x_dim),
             nn.ReLU(),
             nn.Linear(x_dim, x_dim),
-            # nn.ReLU()
+            nn.ReLU(),
+            nn.Linear(x_dim, x_dim)
         )
 
     def forward(self, input_data):
