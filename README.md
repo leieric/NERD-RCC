@@ -26,11 +26,15 @@ Once you have trained NERD, the RCC methods can be run via ``bash scripts/RCC_{d
 
 # Citation
 
-    @article{lei2022neuralrd,
-        title = {Neural Estimation of the Rate-Distortion Function With Applications to Operational Source Coding},
-        author = {Lei, Eric and Hassani, Hamed and Bidokhti, Shirin Saeedi},
-        journal = {arXiv preprint arXiv:2204.01612},
-        year = {2022},
+    @ARTICLE{lei2022neuralrd,
+      author={Lei, Eric and Hassani, Hamed and Bidokhti, Shirin Saeedi},
+      journal={IEEE Journal on Selected Areas in Information Theory}, 
+      title={Neural Estimation of the Rate-Distortion Function With Applications to Operational Source Coding}, 
+      year={2022},
+      volume={3},
+      number={4},
+      pages={674-686},
+      doi={10.1109/JSAIT.2023.3273467}
     }
 
 
