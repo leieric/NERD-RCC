@@ -13,6 +13,17 @@ Trained networks have been saved in the ``trained_lagr/`` folder. These can be u
 
 Once you have trained NERD, the RCC methods can be run via ``bash scripts/RCC_{dataset}.sh``. 
 
+# Dependencies
+- torch
+- numpy
+- scipy
+- pytorch-lightning==1.9.0
+- pykeops
+- huffman
+- tqdm
+- argparse
+- matplotlib
+
 # Citation
 
     @article{lei2022neuralrd,
